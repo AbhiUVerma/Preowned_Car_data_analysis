@@ -1,0 +1,92 @@
+---
+title: "Predictive_final"
+author: "Abhishek U Verma"
+date: "May 2, 2017"
+output: html_document
+---
+```{r}
+setwd('D:/College Work/Semester_1/Data Warehousing, Mining & Vis.(IS-665)/Notes/Project')
+my.dataset=read.csv('CarsDataset.csv')
+dim(my.dataset)
+test = my.dataset
+test
+```
+
+
+## creating dataframe.
+```{r}
+df = data.frame(test$mileage, test$engine_power,  test$engine_displacement, test$transmission, test$fuel_type)
+```
+
+
+
+##normaliza the data...
+
+```{r}
+normalization<-function(x){(x-min(x))/(max(x)-min(x))}
+```
+
+```{r}
+df$engine_power = normalization(df$test.engine_power)
+df$engine_displacement = normalization(df$test.engine_displacement)
+df$mileage = normalization(df$test.mileage)
+names(df)
+label_transmission=as.factor(df$test.transmission)
+
+```
+##model.matrix : to normalize categorica 
+```{r}
+df_1 = subset(df, select = c(engine_power, engine_displacement, mileage ,test.transmission, test.fuel_type))
+df_2 = (model.matrix(test.transmission ~., data=df_1))
+names(df_2)
+nrow(df_2)
+length(df_1$test.fuel_type)
+```
+
+## Splitting data.
+```{r}
+set.seed(1234)
+indicies=sample(1:2 , length(df_1$test.fuel_type) , replace = T, prob=c(.8,.2))
+dim(df_2[indicies==1,]);dim(df_2)
+indicies
+```
+
+```{r}
+training.input=df_2[indicies==1,]
+testing.input=df_2[indicies==2,]
+training.label=label_transmission[indicies==1]
+testing.label=label_transmission[indicies==2]
+
+```
+
+```{r}
+#install.packages('class')
+require(class)
+predictions <- knn(train=training.input, test=testing.input, cl=training.label, k=10)
+data.frame(predictions,testing.label)
+test$transmission = predictions
+```
+
+
+
+
+##Accuracy
+```{r}
+sum(predictions==testing.label)/length(predictions)
+```
+
+
+
+
+##Table : Testing.label and Predictions
+```{r}
+table(predictions, testing.label)
+```
+
+
+##Exporting excel file 
+```{r}
+#install.packages("xlsx")
+require(xlsx)
+write.table(test, "D:/College Work/Semester_1/Data Warehousing, Mining & Vis.(IS-665)/Assignments/Data/Final_project.csv", sep="\t")
+```

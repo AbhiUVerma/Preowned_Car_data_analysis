@@ -1,0 +1,141 @@
+---
+title: "descriptive_final"
+author: "Abhishek U Verma"
+date: "May 3, 2017"
+output: html_document
+---
+
+##I - Loading the data
+
+```{r}
+setwd('D:/College Work/Semester_1/Data Warehousing, Mining & Vis.(IS-665)/Notes/Project')
+my.dataset=read.csv('CarsDataset.csv')
+dim(my.dataset)
+test = my.dataset
+```
+
+
+##II - Exploratory Data Analysis
+
+
+```{r}
+dim(test)
+names(test)
+head(test)
+tail(test)
+```
+
+```{r}
+str(test)
+```
+
+
+##III - Looking for Missing Values
+
+```{r}
+sum(is.na(test))
+
+```
+
+
+##IV - Descriptive Statistics for importants variables
+
+Engine displacement: It is a size of engine in terms of cubic centimeter.  
+
+```{r}
+typeof(test$engine_displacement) #is.numeric(yps$Age)
+summary(test$engine_displacement) #Youngest participants have 15yrs and oldest 30yrs. Typical participant has 20 years of age.
+table(test$engine_displacement) #Distribution of participants by Age
+table(test$engine_displacement,test$engine_power) #Distribution of participants by age and by gender
+
+which(is.na(test$engine_displacement)) #identify rows(observations) with NA for Age
+
+sum(is.na(test$engine_displacement))
+
+sd(test$engine_displacement, na.rm = TRUE) #To remove missing values (NA'S) and avoid gettin na as sd
+
+IQR(test$engine_displacement, na.rm = TRUE)
+
+displacement_mean = mean(test$engine_displacement)
+displacement_median = median(test$engine_displacement)
+
+table(test$engine_displacement,test$price_eur) #price level by engine displacement.
+
+skewness_displacement=3*(displacement_mean-displacement_median)/sd(test$engine_displacement) # Data is positively skewed
+skewness_displacement
+```
+
+
+```{r}
+typeof(test$engine_power) #is.numeric(yps$Age)
+summary(test$engine_power) #Youngest participants have 15yrs and oldest 30yrs. Typical participant has 20 years of age.
+table(test$engine_power) #Distribution of participants by Age
+
+which(is.na(test$engine_power)) #identify rows(observations) with NA for Age
+
+sum(is.na(test$engine_power))
+
+sd(test$engine_power, na.rm = TRUE) #To remove missing values (NA'S) and avoid gettin na as sd
+
+IQR(test$engine_power, na.rm = TRUE)
+
+power_mean = mean(test$engine_power)
+power_median = median(test$engine_power)
+
+test$engine_power[which(is.na(test$engine_power))] <- power_mean #replace na of Age variable by the mean
+
+skewness_power=3*(power_mean-power_median)/sd(test$engine_power)# Data is positively skewed
+skewness_power
+```
+
+##V- Interpretation: 
+
+Ref-1 : Here we can see that the data for the displacement variable is significantly skewed to the right. Looking at the histogram we can infer that the majority of the cars range from 1000 to 3000 cubic centimeter.
+
+Ref-2 : Here we can see that the data for the engine power variable is significantly skewed to the right. This histogram shows that teh majority of the cars range from 0-200 horsepower.
+
+```{r}
+#Ref - 1
+hist(test$engine_displacement, main = 'engine displacement Statistics', col = 'salmon', xlab = 'displacement', ylab = 'Number of cars') 
+
+#Ref - 2
+
+hist(test$engine_power, main = 'engine power Statistics', col = 'salmon', xlab = 'power', ylab = 'Number of cars') 
+
+```
+
+
+
+##VI- Handling of missing values for Gender variable
+
+As there are no missing values thats why this step is skipped in descriptive statistics
+
+##VII- Describing categorical values
+
+```{r}
+
+summary(test$transmission)
+summary(test$fuel_type)
+
+man_power = test[test$transmission=='man',]$engine_power
+auto_power = test[test$transmission=='auto',]$engine_power
+
+gas_power = test[test$fuel_type=='gasoline',]$engine_power
+diesel_power = test[test$fuel_type=='diesel',]$engine_power
+
+mean(man_power, na.rm=T)
+mean(auto_power, na.rm = T)
+
+mean(gas_power, na.rm = T)
+mean(diesel_power, na.rm = T)
+
+```
+
+
+```{r}
+barplot(table(test$transmission))
+barplot(table(test$fuel_type))
+
+```
+
+
